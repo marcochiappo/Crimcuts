@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Barbers - Crimcuts</title>
+    </head>
+    <body>
+        {% if user %}
+            <p>Logged in as: {{ user }}</p>
+                <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <p><a href="{{ url_for('login') }}">Login</a> or
+            <a href="{{ url_for('register') }}">Register</a></p>
+        {% endif %}
+
+        <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+        {% if barbers %}
+            <ul>
+                {% for barber in barbers %}
+                    <li>
+                        <strong>{{ barber["barber_name"] }}</strong>
+                        <!-- prints the shop name, location and description if it exists -->
+                        {% if barber["shop_name"] %} – {{ barber["shop_name"] }}{% endif %}
+                        {% if barber["shop_location"] %} ({{ barber["shop_location"] }}){% endif %}<br>
+                        {% if barber["shop_description"] %}{{ barber["shop_description"] }}<br>{% endif %}
+                        {% if barber["shop_website"] %}
+                            <a href="{{ barber['shop_website'] }}" target="_blank">Website</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No barbers found.</p>
+        {% endif %}
+    </body>
+</html>

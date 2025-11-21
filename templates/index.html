@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Crimcuts</title>
+    </head>
+    <body>
+        <h1>Crimcuts</h1>
+
+        {% if user %}
+            <p>Welcome, {{ user }}!</p>
+            <p><a href="{{ url_for('logout') }}"><button>Logout</button></a></p>
+        {% else %}
+            <p>Welcome to the barber rating app.</p>
+            <p><a href="{{ url_for('register') }}"><button>Register</button></a></p>
+            <p><a href="{{ url_for('login') }}"><button>Login</button></a></p>
+        {% endif %}
+    </body>
+</html>
