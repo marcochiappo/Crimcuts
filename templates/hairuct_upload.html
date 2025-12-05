@@ -1,0 +1,19 @@
+{% extend "layout.html" %}
+{% blockmain %}
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="/haircut_upload" method="post" >
+    <div>
+        <label for="name">Barber: </label>
+        <input type="text" id="barber" name="barber" autocomplete="off" required>
+    </div>
+    <div>
+        <label for="photo">Upload your haircut photo: </label>
+        <input type="file" id="photo" name="photo" accept="image/*" required>
+    </div>
+    <button type="submit">Confirm </button>
+</form>
+{% endblock %}

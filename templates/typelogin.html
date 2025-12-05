@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<p>Log in </p>
+
+<form action="/typelogin" method="post">
+    <select name="person_type" placeholder="Select user type">
+        <option value="barber" id="barber">Barber</option>
+        <option value="customer" id="customer">Customer</option>
+    </select>
+    <button type="submit">Confirm</button>
+</form>
+
+{% endblock %}

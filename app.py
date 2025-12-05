@@ -1,15 +1,94 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.config["DEBUG"] = True
 app.secret_key = "supersecretkey"
 
 @app.route("/")
 def index():
     # if user is logged in, get username from session
     user=session.get("username")
-    return render_template("index.html", user=user)
+    return render_template("index.html", user=session.get("username"))
+
+# @app.route("/typelogin", methods=["GET", "POST"])
+# def typelogin():
+    # if request.method == "POST":
+        # person_type = request.form["person_type"]
+        # if person_type == "customer":
+            # return render_template("login.html")
+        # if person_type == "barber":
+            # return render_template("barber_login.html")
+    # return render_template("typelogin.html")
+
+# @app.route("/barber_register", methods=["GET", "POST"])
+# def barber_register():
+    #db = get_db_connection()
+    # if request.method == "POST":
+        # barber_name = request.form.get("name", "").strip()
+        # barber_shop = request.form.get("shop", "").strip()
+        # barber_profile_photo = request.files.get("photo")
+        # img_url = None
+
+        # Save uploaded photo if present
+        # if barber_profile_photo and barber_profile_photo.filename:
+            # photo_path = "static/barber_images/" + barber_profile_photo.filename
+            # barber_profile_photo.save(photo_path)
+            # img_url = photo_path
+
+        # Insert into barbers table (assumes shops.id matches barber_shop or barber_shop is shop_id)
+        # db.execute(
+            # "INSERT INTO barbers (name, shop_id, photo) VALUES (?, ?, ?)",
+            #(barber_name, barber_shop or None, img_url)
+        #)
+        #db.commit()
+        #db.close()
+        #return redirect(url_for("barbers"))
+
+    #return render_template("barber_register.html")
+
+
+@app.route("/haircut_upload", methods=["GET", "POST"])
+def haircut_upload():
+    db = get_db_connection()
+    if request.method == "POST":
+        haircut_photo = request.files.get("photo")
+        img = None
+
+        # Save uploaded photo if present
+        if haircut_photo and haircut_photo.filename:
+            img_path = "static/barber_images/" + haircut_photo.filename
+            haircut_photo.save(img_path)
+            img = img_path
+
+        barber_of_choice = request.form.get("barber", "").strip()
+
+        # Validate barber exists
+        barber_row = db.execute(
+            "SELECT id FROM barbers WHERE name = ?",
+            (barber_of_choice,)
+        ).fetchone()
+
+        # If barber not found, return error
+        if barber_row is None:
+            error = "Please enter a valid barber: format is First_name Last_name"
+            db.close()
+            return render_template("haircut_upload.html", error=error)
+
+        barber_id = barber_row["id"]
+
+        # Insert uploaded haircut photo with associated barber_id
+        db.execute(
+            "INSERT INTO haircut_photos (barber_id, photo) VALUES (?, ?)",
+            (barber_id, img)
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("barbers"))
+
+    db.close()
+    return render_template("haircut_upload.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -18,12 +97,34 @@ def register():
         password = request.form["password"]
         confirm_password = request.form["confirm_password"]
 
+        # validate input
         if not username or not password or not confirm_password:
             error = "All fields are required."
             return render_template("register.html", error=error)
         
+        # check if passwords match
         if password != confirm_password:
             error = "Passwords do not match. Please try again."
+            return render_template("register.html", error=error)
+        
+        if len(password) < 8:
+            error = "Password must be at least 8 characters long."
+            return render_template("register.html", error=error)
+        
+        if not any(char.isdigit() for char in password):
+            error = "Password must contain at least one number."
+            return render_template("register.html", error=error)
+        
+        if not any(char.isupper() for char in password):
+            error = "Password must contain at least one uppercase letter."
+            return render_template("register.html", error=error)
+        
+        if not any (char.islower() for char in password):
+            error = "Password must contain at least one lowercase letter."
+            return render_template("register.html", error=error)
+        
+        if not any (char.isalpha() for char in password):
+            error = "Password must contain at least one letter."
             return render_template("register.html", error=error)
         
         try:
@@ -57,27 +158,30 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
+        # validate input
         if not username or not password:
             error = "All fields are required."
             return render_template("login.html", error=error)
 
+        # fetch user from database
         conn = sqlite3.connect("crimcuts.db")
-        row = conn.execute("SELECT password FROM users WHERE username = ?", (username,))
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT id, password FROM users WHERE username = ?", (username,))
         # returns a single row from the result
         row = row.fetchone()
         conn.close()
 
-        if row is None or not check_password_hash(row[0], password):
+        # check if user exists and password is correct
+        if row is None or not check_password_hash(row["password"], password):
             error = "Invalid username or password."
             return render_template("login.html", error=error)
-        
         # remember user
+        session["user_id"] = row["id"]
         session["username"] = username
-
         # on successful login, redirect to home page
         return redirect(url_for("index"))
+    
     else:
-
         return render_template("login.html")
 
 @app.route("/logout")
@@ -110,65 +214,32 @@ def close_db_connection(error):
     if db is not None:
         db.close()
 
-
+# Barbers listing page
 @app.route("/barbers")
 def barbers():
     db = get_db_connection()
-    # fetch all barbers from the database
-    barbers = db.execute("""
-        SELECT
-            barbers.id AS barber_id,
-            barbers.name AS barber_name,
-            shops.name AS shop_name,
-            shops.location AS shop_location,
-            shops.website AS shop_website,
-            shops.description AS shop_description
-        FROM barbers
-        JOIN shops ON barbers.shop_id = shops.id
-        ORDER BY shops.name, barbers_name ASC;
-        """).fetchall()
-    return render_template("barbers.html", barbers=barbers, user=session.get("username"))
+    shops = db.execute("""SELECT id, name, location, website, description FROM shops ORDER BY name ASC""").fetchall()
+    result = []
+    # For each shop, get its barbers
+    for shop in shops:
+        shop_barbers = db.execute("""
+            SELECT id, name FROM barbers
+            WHERE shop_id = ?
+            ORDER BY name ASC
+        """, (shop["id"],)).fetchall()
+        
+        # Append shop and its barbers to result
+        result.append({
+            "shop": shop,
+            "barbers": shop_barbers
+        })
 
-@app.route("/barbers/<int:barber_id>", methods=["GET", "POST"])
+    return render_template("barbers.html", shops = result, user=session.get("username"))
+
+# Barber detail page with ratings
+@app.route("/barbers/<int:barber_id>")
 def barber_detail(barber_id):
     db = get_db_connection()
-
-    # If user submits a rating (POST)
-    if request.method == "POST":
-        # Must be logged in to rate
-        if "username" not in session:
-            # not logged in, send to login page
-            return redirect(url_for("login"))
-
-        rating_value = request.form.get("rating")
-        comment = request.form.get("comment", "").strip()
-
-        # Rating must exist and be between 1 and 5
-        if not rating_value or rating_value not in ["1", "2", "3", "4", "5"]:
-            error = "Please select a rating between 1 and 5."
-        else:
-            # Find current user id
-            user_row = db.execute(
-                "SELECT id FROM users WHERE username = ?",
-                (session["username"],)
-            ).fetchone()
-
-            if user_row is None:
-                # Logged-in session but user not in database
-                error = "User not found."
-            else:
-                user_id = user_row["id"]
-
-                # Insert rating
-                db.execute(
-                    "INSERT INTO ratings (user_id, barber_id, rating, comment) VALUES (?, ?, ?, ?)",
-                    (user_id, barber_id, int(rating_value), comment)
-                )
-                # Permanently save all changes made
-                db.commit()
-                return redirect(url_for("barber_detail", barber_id=barber_id))
-
-    # GET request - fetch barber details and ratings
 
     # Barber and shop info
     barber = db.execute("""
@@ -184,16 +255,16 @@ def barber_detail(barber_id):
         WHERE barbers.id = ?
     """, (barber_id,)).fetchone()
 
+    # If barber not found, return 404
     if barber is None:
-        # Simple 404 page
         return "Barber not found", 404
 
-    # Ratings for this barber (joined with users for username)
+    # Ratings for this barber
     ratings = db.execute("""
         SELECT
-            ratings.rating      AS rating_value,
-            ratings.comment     AS rating_comment,
-            users.username      AS username
+            ratings.rating  AS rating_value,
+            ratings.comment AS rating_comment,
+            users.username  AS username
         FROM ratings
         JOIN users ON ratings.user_id = users.id
         WHERE ratings.barber_id = ?
@@ -207,9 +278,15 @@ def barber_detail(barber_id):
         WHERE barber_id = ?
     """, (barber_id,)).fetchone()
 
-    avg_rating = avg_row["avg_rating"]
-    count_ratings = avg_row["count_ratings"]
+    # Handle case with no ratings
+    if avg_row is None:
+        avg_rating = None
+        count_ratings = 0
+    else:
+        avg_rating = avg_row["avg_rating"]
+        count_ratings = avg_row["count_ratings"]
 
+    # Render the barber detail template
     return render_template(
         "barber_detail.html",
         barber=barber,
@@ -219,6 +296,85 @@ def barber_detail(barber_id):
         user=session.get("username")
     )
 
+
+# Rate a barber
+@app.route("/rate/<int:barber_id>", methods=["POST"])
+def rate_barber(barber_id):
+    if "user_id" not in session:
+        flash("You must be logged in to rate a barber.")
+        return redirect(url_for("login"))
+    
+    # Get rating and comment from form submission
+    rating_str = request.form.get("rating")
+    if not rating_str:
+        flash("Please select a rating.")
+        return redirect(url_for("barber_detail", barber_id=barber_id))
+
+    # Convert rating to integer and get comment
+    rating = int(rating_str)
+    comment = request.form.get("comment", "").strip()
+    user_id = session["user_id"]
+
+    db = get_db_connection()
+    # Check if user has already rated this barber
+    existing = db.execute("""
+        SELECT id FROM ratings
+        WHERE user_id = ? AND barber_id = ?
+    """, (user_id, barber_id)).fetchone()
+    # If so, update the existing rating; otherwise, insert a new one
+    if existing:
+        db.execute("""
+            UPDATE ratings
+            SET rating = ?, comment = ?
+            WHERE id = ?
+        """, (rating, comment, existing["id"]))
+        flash("Your rating has been updated!")
+    # New rating
+    else:
+        db.execute("""
+            INSERT INTO ratings (user_id, barber_id, rating, comment)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, barber_id, rating, comment))
+        flash("Thanks for your rating g!")
+    
+    db.commit()
+    db.close()
+    
+    return redirect(url_for("barber_detail", barber_id=barber_id))
+
+
+# Delete a rating
+@app.route("/rate/<int:barber_id>/delete", methods=["POST"])
+def delete_rating(barber_id):
+    if "user_id" not in session:
+        flash("You must be logged in to delete a rating.")
+        return redirect(url_for("login"))
+    
+    user_id = session["user_id"]
+    db = get_db_connection()
+    
+    # Check if user has rated this barber
+    existing = db.execute("""
+                          SELECT id FROM ratings WHERE user_id = ? AND barber_id = ?
+                          """, (user_id, barber_id)).fetchone()
+    
+    # If so, delete the rating
+    if existing:
+        db.execute("DELETE FROM ratings WHERE user_id = ? AND barber_id = ?", (user_id, barber_id))
+        flash("Your rating has been deleted.")
+    else:
+        flash("No rating found to delete.")
+    
+    db.commit()
+    db.close()
+    
+    flash("Your rating has been deleted.")
+    return redirect(url_for("barber_detail", barber_id=barber_id))
+
+# About page
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 if __name__== "__main__":
     app.run(debug=True)

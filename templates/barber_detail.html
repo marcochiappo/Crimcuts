@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<div class="barber-page">
+
+  <!-- Top: barber + shop info -->
+  <section class="barber-header">
+    <h1 class="barber-name">{{ barber["barber_name"] }}</h1>
+
+    <p class="barber-shop">
+      <span class="label">Shop:</span>
+      <strong>{{ barber["shop_name"] }}</strong>
+      {% if barber["shop_location"] %}
+        <span class="shop-location">({{ barber["shop_location"] }})</span>
+      {% endif %}
+    </p>
+
+    {% if barber["shop_website"] %}
+      <p class="shop-website">
+        <span class="label">Website:</span>
+        <a href="{{ barber['shop_website'] }}" target="_blank">
+          {{ barber['shop_website'] }}
+        </a>
+      </p>
+    {% endif %}
+
+    <p class="back-link">
+      <a href="{{ url_for('barbers') }}">← Back to all barbers</a>
+    </p>
+  </section>
+
+  <!-- Middle: ratings summary + list -->
+  <section class="ratings-section">
+    <div class="ratings-header">
+      <h2>Ratings</h2>
+      {% if count_ratings == 0 %}
+        <p class="ratings-summary">No ratings yet. Be the first one to rate!</p>
+      {% else %}
+        <p class="ratings-summary">
+          Average rating:
+          <span class="avg-rating">{{ "%.1f" | format(avg_rating) }}</span> / 5
+          <span class="ratings-count">({{ count_ratings }} review{% if count_ratings != 1 %}s{% endif %})</span>
+        </p>
+      {% endif %}
+    </div>
+
+    {% if ratings %}
+      <ul class="ratings-list">
+        {% for rating in ratings %}
+          <li class="rating-item">
+            <div class="rating-top-row">
+              <span class="rating-user">{{ rating["username"] }}</span>
+              <span class="rating-score">{{ rating["rating_value"] }} / 5</span>
+            </div>
+            {% if rating["rating_comment"] %}
+              <p class="rating-comment">{{ rating["rating_comment"] }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+
+  <!-- Bottom: leave / remove rating -->
+  <section class="rating-form-section">
+    {% if user %}
+    <hr>
+      <h2>Leave a rating</h2>
+      <form class="rating-form" method="post"
+            action="{{ url_for('rate_barber', barber_id=barber['barber_id']) }}">
+        <div class="form-row">
+          <label for="rating">Rating (1–5)</label>
+          <select id="rating" name="rating" required>
+            <option value="" disabled selected>Select a rating</option>
+            <option value="1">1 — Poor</option>
+            <option value="2">2 — Fair</option>
+            <option value="3">3 — Good</option>
+            <option value="4">4 — Very good</option>
+            <option value="5">5 — Excellent</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="comment">Comment (optional)</label>
+          <textarea id="comment"
+                    name="comment"
+                    rows="3"
+                    maxlength="1000"
+                    placeholder="Share your experience..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit">Submit rating</button>
+        </div>
+    </form>
+
+    <form method="post"
+        action="{{ url_for('delete_rating', barber_id=barber['barber_id']) }}" style="margin-top: 10px;">
+        <button type="submit" class="secondary-button">Remove my rating</button>
+    </form>
+    {% else %}
+      <p>
+        <a href="{{ url_for('login') }}">Log in</a>
+        or
+        <a href="{{ url_for('register') }}">register</a>
+        to leave a rating.
+      </p>
+    {% endif %}
+  </section>
+
+  <p class="back-home-link">
+    <a href="{{ url_for('index') }}">← Back to home</a>
+  </p>
+
+</div>
+
+{% endblock %}
+

@@ -1,37 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Barbers - Crimcuts</title>
-    </head>
-    <body>
-        {% if user %}
-            <p>Logged in as: {{ user }}</p>
-                <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-            <p><a href="{{ url_for('login') }}">Login</a> or
-            <a href="{{ url_for('register') }}">Register</a></p>
-        {% endif %}
+{% extends "layout.html" %}
+{% block main %}
 
-        <p><a href="{{ url_for('index') }}">Back to Home</a></p>
-        {% if barbers %}
-            <ul>
-                {% for barber in barbers %}
-                    <li>
-                        <strong>{{ barber["barber_name"] }}</strong>
-                        <!-- prints the shop name, location and description if it exists -->
-                        {% if barber["shop_name"] %} – {{ barber["shop_name"] }}{% endif %}
-                        {% if barber["shop_location"] %} ({{ barber["shop_location"] }}){% endif %}<br>
-                        {% if barber["shop_description"] %}{{ barber["shop_description"] }}<br>{% endif %}
-                        {% if barber["shop_website"] %}
-                            <a href="{{ barber['shop_website'] }}" target="_blank">Website</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No barbers found.</p>
-        {% endif %}
-    </body>
-</html>
+{% if user %}
+    <p>Logged in as: {{ user }}</p>
+{% else %}
+    <p>
+        <a href="{{ url_for('login') }}">Login</a> or
+        <a href="{{ url_for('register') }}">Register</a>
+    </p>
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+<h1>Barber Shops</h1>
+
+{% for entry in shops %}
+    <div class ="shop_section">
+        <button type="shop-toggle" onclick="toggleShop('{{ entry.shop.id }}')">
+            {{ entry.shop.name }}
+        </button>
+
+        <div id="shop-{{ entry.shop.id }}" class="shop-details" style="display: none; margin-top: 8px;">
+            {% for barber in entry.barbers %}
+                <p>
+                    <a href="{{ url_for('barber_detail', barber_id=barber['id']) }}">
+                        <strong>{{ barber["name"] }}</strong>
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    // Open or close the box with the barbers of a shop
+    function toggleShop(id) {
+        // find html element with id shop-id
+        let box = document.getElementById('shop-' + id);
+        // check if list is visible, if so hide it, else show it
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
+
+{% endblock %}

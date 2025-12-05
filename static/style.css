@@ -1,0 +1,368 @@
+/* GLOBAL STYLES  */
+body {
+   background-color: #0d0d0d;   /* deep black */
+   color: #e5e5e5;              /* light grey text */
+   font-family: 'Roboto', sans-serif;
+   margin: 0;
+   padding: 0;
+}
+
+
+/*  HEADER TITLE  */
+.site-title {
+   font-family: 'Anton', sans-serif;
+   font-size: 72px;
+   color: #ff1a1a;
+   text-align: center;
+   margin: 30px 0 10px;
+}
+
+
+.tagline {
+   text-align: center;
+   font-size: 18px;
+   color: #cccccc;
+   margin-bottom: 30px;
+}
+
+
+/*  NAVIGATION BAR */
+nav {
+   background-color: #8b0000; /* deep red */
+   padding: 15px;
+   text-align: center;
+}
+
+
+nav a {
+   color: white;
+   text-decoration: none;
+   margin: 0 20px;
+   font-size: 18px;
+   font-weight: bold;
+}
+
+
+nav a:hover {
+   color: #ff4c4c;
+}
+
+
+/*  MAIN CONTENT WRAPPER  */
+main {
+   width: 90%;
+   max-width: 800px;
+   margin: 40px auto;
+}
+
+
+/* HEADERS INSIDE PAGES  */
+h1, h2 {
+   color: #ff1a1a;
+   font-weight: 700;
+}
+
+
+/* BUTTONS */
+button, a button {
+   background-color: #8b0000;
+   color: white;
+   border: none;
+   padding: 10px 14px;
+   margin-top: 10px;
+   font-size: 16px;
+   cursor: pointer;
+   border-radius: 4px;
+}
+
+
+button:hover, a button:hover {
+   background-color: #ff1a1a;
+}
+
+
+/* LINKS  */
+a {
+   color: #ff4c4c;
+   text-decoration: none;
+}
+
+
+a:hover {
+   color: #ff1a1a;
+   text-decoration: underline;
+}
+
+
+/*  FORMS  */
+form {
+   margin-top: 20px;
+}
+
+
+label {
+   font-weight: bold;
+}
+
+
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+   width: 100%;
+   padding: 10px;
+   margin-top: 5px;
+   margin-bottom: 15px;
+   background-color: #1a1a1a;
+   color: white;
+   border: 1px solid #444;
+   border-radius: 4px;
+}
+
+
+input:focus,
+textarea:focus,
+select:focus {
+   outline: none;
+   border-color: #ff1a1a;
+}
+
+
+/* BARBER LIST  */
+ul {
+   list-style: none;
+   padding: 0;
+}
+
+
+li {
+   background-color: #1a1a1a;
+   padding: 15px;
+   margin-bottom: 12px;
+   border-radius: 6px;
+   border-left: 5px solid #8b0000;
+}
+
+
+li strong {
+   font-size: 20px;
+   color: #ff4c4c;
+}
+
+
+/* FOOTER  */
+footer {
+   text-align: center;
+   padding: 20px;
+   color: #aaaaaa;
+   margin-top: 60px;
+   border-top: 1px solid #222;
+}
+
+
+/* Global Header Photos ===== */
+
+
+.site-header {
+   position: relative;
+   text-align: center;
+   padding-top: 20px;
+   margin-bottom: 20px;
+}
+
+
+/* LEFT + RIGHT PHOTOS */
+.corner-photo {
+   position: absolute;
+   top: 10px;
+   width: 130px;
+   height: 130px;
+   object-fit: cover;
+   border-radius: 10px;
+   border: 3px solid #8b0000;
+}
+
+
+.left-corner {
+   left: 40px;
+}
+
+
+.right-corner {
+   right: 40px;
+}
+
+
+/* SCISSORS  */
+.title-wrapper {
+   display: inline-flex;
+   align-items: center;
+   gap: 12px;
+   justify-content: center;
+}
+
+
+.scissors-icon {
+   width: 65px;
+   height: 65px;
+}
+
+
+/* Adjust the font */
+.site-title {
+   font-size: 70px;
+   margin: 0;
+   padding: 0;
+}
+/* === Barber detail page === */
+
+.barber-page {
+    max-width: 800px;
+    margin: 30px auto 40px;
+    background-color: #111;
+    padding: 24px 28px;
+    border-radius: 10px;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
+}
+
+.barber-header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+
+.barber-name {
+    font-size: 32px;
+    margin: 0 0 8px;
+    color: #ff4c4c;
+}
+
+.barber-shop .label,
+.shop-website .label {
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.shop-location {
+    color: #bbbbbb;
+}
+
+.shop-description {
+    margin: 8px 0 4px;
+    color: #dddddd;
+}
+
+.shop-website a {
+    color: #ff4c4c;
+}
+
+.back-link a,
+.back-home-link a {
+    font-size: 14px;
+}
+
+/* Ratings section */
+
+.ratings-section {
+    border-bottom: 1px solid #333;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+}
+
+.ratings-header h2,
+.rating-form-section h2 {
+    margin-bottom: 6px;
+}
+
+.ratings-summary {
+    margin: 0 0 10px;
+    color: #dddddd;
+}
+
+.avg-rating {
+    font-weight: 700;
+    color: #ff4c4c;
+}
+
+.ratings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rating-item {
+    background-color: #191919;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid #8b0000;
+}
+
+.rating-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.rating-user {
+    font-weight: 700;
+}
+
+.rating-score {
+    font-weight: 700;
+    color: #ff4c4c;
+}
+
+.rating-comment {
+    margin: 0;
+    color: #dddddd;
+}
+
+/* Rating form */
+
+.rating-form-section {
+    margin-bottom: 10px;
+}
+
+.rating-form .form-row {
+    margin-bottom: 12px;
+}
+
+.rating-form label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.rating-form select,
+.rating-form textarea {
+    width: 100%;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 8px;
+    color: #ffffff;
+}
+
+.rating-form textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.secondary-button {
+    background-color: transparent;
+    border: 1px solid #ff4c4c;
+    color: #ff4c4c;
+}
+
+.secondary-button:hover {
+    background-color: #ff1a1a;
+    color: #ffffff;
+}
