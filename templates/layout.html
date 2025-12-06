@@ -15,6 +15,8 @@
     <!-- Link to CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+    {% block head %}{% endblock %}
+
 </head>
 
 
@@ -42,7 +44,7 @@
         <a href="{{ url_for('index') }}">Home</a>
         <a href="{{ url_for('barbers') }}">Barbers</a>
         <a href="{{ url_for('about') }}">About</a>
-
+        <a href="{{ url_for('map_page') }}">Map</a>
         {% if session.get("username") %}
             <a href="{{ url_for('logout') }}">Logout</a>
         {% else %}

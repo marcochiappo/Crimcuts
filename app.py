@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g, flash
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import difflib
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -376,5 +377,30 @@ def delete_rating(barber_id):
 def about():
     return render_template("about.html")
 
+@app.route("/map_page")
+def map_page():
+    return render_template("map.html")
+
+@app.route("/search_shops")
+def search_shops():
+    query = request.args.get("query", "").strip()
+    if not query:
+        return jsonify([])
+
+    conn = get_db_connection()
+    shops_data = conn.execute("SELECT name, latitude, longitude FROM shops WHERE latitude IS NOT NULL AND longitude IS NOT NULL").fetchall()
+    conn.close()
+
+    # Convert to {"name": ..., "location": "lat,lon"} format
+    all_shops = [
+        {"name": row["name"], "location": f"{row['latitude']},{row['longitude']}"}
+        for row in shops_data
+    ]
+
+    query_lower = query.lower()
+    result = [shop for shop in all_shops if query_lower in shop["name"].lower()]
+    return jsonify(result)
+
 if __name__== "__main__":
     app.run(debug=True)
+
