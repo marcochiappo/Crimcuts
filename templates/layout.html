@@ -47,6 +47,8 @@
         <a href="{{ url_for('map_page') }}">Map</a>
         {% if session.get("username") %}
             <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('upload_shop') }}">Upload Shop</a>
+            <a href="{{ url_for('upload_barber') }}">Upload Barber</a>
         {% else %}
             <a href="{{ url_for('login') }}">Login</a>
             <a href="{{ url_for('register') }}">Register</a>

@@ -55,6 +55,11 @@
             {% if rating["rating_comment"] %}
               <p class="rating-comment">{{ rating["rating_comment"] }}</p>
             {% endif %}
+            {% if rating["photo"] %}
+              <div class="rating-photo">
+                <img src="{{ url_for('static', filename=rating['photo'].replace('static/', '')) }}" alt="Haircut photo from {{ rating['username'] }}" style="max-width: 300px; height: auto; margin-top: 10px; border-radius: 8px;">
+              </div>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>
@@ -66,7 +71,7 @@
     {% if user %}
     <hr>
       <h2>Leave a rating</h2>
-      <form class="rating-form" method="post"
+      <form class="rating-form" method="post" enctype="multipart/form-data"
             action="{{ url_for('rate_barber', barber_id=barber['barber_id']) }}">
         <div class="form-row">
           <label for="rating">Rating (1–5)</label>
@@ -88,7 +93,10 @@
                     maxlength="1000"
                     placeholder="Share your experience..."></textarea>
         </div>
-
+        <div>
+        <label for="photo">Upload your haircut photo: </label>
+        <input type="file" id="photo" name="photo" accept="image/*">
+        </div>
         <div class="form-actions">
           <button type="submit">Submit rating</button>
         </div>

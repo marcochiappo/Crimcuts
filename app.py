@@ -265,6 +265,7 @@ def barber_detail(barber_id):
         SELECT
             ratings.rating  AS rating_value,
             ratings.comment AS rating_comment,
+            ratings.photo   AS photo,
             users.username  AS username
         FROM ratings
         JOIN users ON ratings.user_id = users.id
@@ -316,6 +317,16 @@ def rate_barber(barber_id):
     comment = request.form.get("comment", "").strip()
     user_id = session["user_id"]
 
+    # Upload Image of Haircut
+    haircut_photo = request.files.get("photo")
+    photo_path = None
+    
+    if haircut_photo and haircut_photo.filename:
+        # Save uploaded photo
+        filename = f"{barber_id}_{user_id}_{haircut_photo.filename}"
+        photo_path = "static/barber_images/" + filename
+        haircut_photo.save(photo_path)
+
     db = get_db_connection()
     # Check if user has already rated this barber
     existing = db.execute("""
@@ -326,16 +337,16 @@ def rate_barber(barber_id):
     if existing:
         db.execute("""
             UPDATE ratings
-            SET rating = ?, comment = ?
+            SET rating = ?, comment = ?, photo = ?
             WHERE id = ?
-        """, (rating, comment, existing["id"]))
+        """, (rating, comment, photo_path, existing["id"]))
         flash("Your rating has been updated!")
     # New rating
     else:
         db.execute("""
-            INSERT INTO ratings (user_id, barber_id, rating, comment)
-            VALUES (?, ?, ?, ?)
-        """, (user_id, barber_id, rating, comment))
+            INSERT INTO ratings (user_id, barber_id, rating, comment, photo)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, barber_id, rating, comment, photo_path))
         flash("Thanks for your rating g!")
     
     db.commit()
@@ -400,6 +411,64 @@ def search_shops():
     query_lower = query.lower()
     result = [shop for shop in all_shops if query_lower in shop["name"].lower()]
     return jsonify(result)
+
+@app.route("/upload_shop", methods=["GET", "POST"])
+def upload_shop():
+    #The goal of this function is to allow barbers to upload their shop information to the database.
+    if request.method == "POST":
+        name = request.form["shop"]
+        address = request.form["address"]
+        latitude = request.form["latitude"]
+        longitude = request.form["longitude"]
+        website = request.form["website"]
+        description = request.form["description"]
+        db = get_db_connection()
+        db.execute(
+            "INSERT INTO shops (name, location, latitude, longitude, website, description) VALUES (?, ?, ?, ?, ?, ?)",
+            (name, address, latitude, longitude, website, description)
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("barbers"))
+    return render_template("Upload_shop.html")
+
+
+@app.route("/upload_barber", methods=["GET", "POST"])
+def upload_barber():
+    """Render a barber upload form and handle submissions.
+
+    The form expects 'barber' (name) and 'shop_id' (id of chosen shop).
+    Requires user to be logged in.
+    """
+    if "user_id" not in session:
+        flash("You must be logged in to upload a barber profile.")
+        return redirect(url_for("login"))
+    
+    db = get_db_connection()
+    if request.method == "POST":
+        barber_name = request.form.get("barber", "").strip()
+        shop_id = request.form.get("shop_id")
+
+        if not barber_name or not shop_id:
+            error = "Barber name and shop are required."
+            # load shops for re-rendering the form with an error
+            shops = db.execute("SELECT id, name FROM shops ORDER BY name ASC").fetchall()
+            db.close()
+            return render_template("Upload_barber.html", shops=shops, error=error)
+
+        # insert into barbers table
+        db.execute(
+            "INSERT INTO barbers (name, shop_id) VALUES (?, ?)",
+            (barber_name, shop_id)
+        )
+        db.commit()
+        db.close()
+        return redirect(url_for("barbers"))
+
+    # GET - render form with shops list
+    shops = db.execute("SELECT id, name FROM shops ORDER BY name ASC").fetchall()
+    db.close()
+    return render_template("Upload_barber.html", shops=shops)
 
 if __name__== "__main__":
     app.run(debug=True)
