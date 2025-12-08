@@ -13,43 +13,6 @@ def index():
     user=session.get("username")
     return render_template("index.html", user=session.get("username"))
 
-# @app.route("/typelogin", methods=["GET", "POST"])
-# def typelogin():
-    # if request.method == "POST":
-        # person_type = request.form["person_type"]
-        # if person_type == "customer":
-            # return render_template("login.html")
-        # if person_type == "barber":
-            # return render_template("barber_login.html")
-    # return render_template("typelogin.html")
-
-# @app.route("/barber_register", methods=["GET", "POST"])
-# def barber_register():
-    #db = get_db_connection()
-    # if request.method == "POST":
-        # barber_name = request.form.get("name", "").strip()
-        # barber_shop = request.form.get("shop", "").strip()
-        # barber_profile_photo = request.files.get("photo")
-        # img_url = None
-
-        # Save uploaded photo if present
-        # if barber_profile_photo and barber_profile_photo.filename:
-            # photo_path = "static/barber_images/" + barber_profile_photo.filename
-            # barber_profile_photo.save(photo_path)
-            # img_url = photo_path
-
-        # Insert into barbers table (assumes shops.id matches barber_shop or barber_shop is shop_id)
-        # db.execute(
-            # "INSERT INTO barbers (name, shop_id, photo) VALUES (?, ?, ?)",
-            #(barber_name, barber_shop or None, img_url)
-        #)
-        #db.commit()
-        #db.close()
-        #return redirect(url_for("barbers"))
-
-    #return render_template("barber_register.html")
-
-
 @app.route("/haircut_upload", methods=["GET", "POST"])
 def haircut_upload():
     db = get_db_connection()

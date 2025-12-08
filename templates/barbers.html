@@ -2,7 +2,7 @@
 {% block main %}
 
 {% if user %}
-    <p>Logged in as: {{ user }}</p>
+    <p>Welcome, {{ user }}! Browse the barber shops and their barbers below.</p>
 {% else %}
     <p>
         <a href="{{ url_for('login') }}">Login</a> or

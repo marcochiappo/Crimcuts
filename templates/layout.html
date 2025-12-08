@@ -22,19 +22,21 @@
 
 <body>
 
-    <header class="site-header">
+<header class="site-header">
 
-    <img src="{{ url_for('static', filename='images/matthew.jpg') }}" class="corner-photo left-corner">
+    <img src="{{ url_for('static', filename='images/haircut1.jpg') }}"
+         class="corner-photo left-corner">
 
-<div class="title-wrapper">
-    <img src="{{ url_for('static', filename='images/scissors.jpg') }}" class="scissors-icon">
-    <h1 class="site-title">CrimCutz</h1>
-</div>
+    <div class="title-wrapper">
+        <img src="{{ url_for('static', filename='images/scissors.png') }}"
+             class="scissors-icon">
+        <h1 class="site-title">CrimCutz</h1>
+    </div>
 
-<img src="{{ url_for('static', filename='images/balty.jpg') }}" class="corner-photo right-corner">
+    <img src="{{ url_for('static', filename='images/haircut3.png') }}"
+         class="corner-photo right-corner">
 
-
-    <p class="tagline">“Doing Harvard boys right — helping your bros get a decent trim.”</p>
+    <p class="tagline">"Doing Harvard boys right — helping your bros get a decent trim."</p>
 
 </header>
 
@@ -46,9 +48,9 @@
         <a href="{{ url_for('about') }}">About</a>
         <a href="{{ url_for('map_page') }}">Map</a>
         {% if session.get("username") %}
-            <a href="{{ url_for('logout') }}">Logout</a>
             <a href="{{ url_for('upload_shop') }}">Upload Shop</a>
             <a href="{{ url_for('upload_barber') }}">Upload Barber</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
         {% else %}
             <a href="{{ url_for('login') }}">Login</a>
             <a href="{{ url_for('register') }}">Register</a>
