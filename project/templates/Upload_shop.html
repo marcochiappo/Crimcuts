@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<h1>Upload Your Shop</h1>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="{{ url_for('upload_shop') }}" method="post">
+    <div>
+        <label for="shop">Name:</label><br>
+        <input type="text" id="shop" name="shop" autocomplete="off"required>
+    </div>
+
+    <div>
+        <label for="Address">Address:</label><br>
+        <input type="text" id="address" name="address" placeholder = "Ex. 40 John F. Kennedy St, Cambridge, MA 02138" required>
+    </div>
+    <div>
+        <label for="latitude">Latitude of your shop:</label><br>
+        <input type="text" id="latitude" name="latitude" placeholder ="42.37197512242582" required>
+    </div>
+    <div>
+        <label for="longitude">Longitude of your shop:</label><br>
+        <input type="text" id="longitude" name="longitude" placeholder ="-71.11936000365192" required>
+    </div>
+    <div>
+        <label for="website">Provide a link to your website:</label><br>
+        <input type="text" id="website" name="website" required>
+    </div>
+    <div>
+        <label for="description">Provide a description of your shop:</label>
+        <input type="text" id="description" name="description" required>
+    </div>
+    <button type="submit">Confirm</button>
+</form>
+
+<p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+{% endblock %}

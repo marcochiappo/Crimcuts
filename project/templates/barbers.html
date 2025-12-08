@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block main %}
+
+{% if user %}
+    <p>Welcome, {{ user }}! Browse the barber shops and their barbers below.</p>
+{% else %}
+    <p>
+        <a href="{{ url_for('login') }}">Login</a> or
+        <a href="{{ url_for('register') }}">Register</a>
+    </p>
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+<h1>Barber Shops</h1>
+
+{% for entry in shops %}
+    <div class ="shop_section">
+        <button type="shop-toggle" onclick="toggleShop('{{ entry.shop.id }}')">
+            {{ entry.shop.name }}
+        </button>
+
+        <div id="shop-{{ entry.shop.id }}" class="shop-details" style="display: none; margin-top: 8px;">
+            {% for barber in entry.barbers %}
+                <p>
+                    <a href="{{ url_for('barber_detail', barber_id=barber['id']) }}">
+                        <strong>{{ barber["name"] }}</strong>
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    // Open or close the box with the barbers of a shop
+    function toggleShop(id) {
+        // find html element with id shop-id
+        let box = document.getElementById('shop-' + id);
+        // check if list is visible, if so hide it, else show it
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
+
+{% endblock %}

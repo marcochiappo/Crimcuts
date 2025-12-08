@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- Leaflet.js CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    main {
+        max-width: 100%;
+        width: 100%;
+    }
+    #map {
+        height: 500px;
+        width: 100%;
+        margin-top: 20px;
+        z-index: 1;
+    }
+    #suggestions {
+        border: 1px solid #666;
+        position: absolute;
+        background: #1a1a1a;
+        z-index: 100;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+    }
+    #suggestions.active {
+        display: block;
+    }
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+        color: #e5e5e5;
+        border-bottom: 1px solid #333;
+    }
+    .suggestion-item:hover {
+        background: #333;
+        color: #ff1a1a;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+
+<h1>Find Your Barber</h1>
+
+<div style="position: relative;">
+    <label for="shop">Name of Barber Shop:</label><br>
+    <input type="text" id="shop" name="shop" autocomplete="off" required>
+    <div id="suggestions"></div>
+</div>
+
+<div id="map"></div>
+
+<script>
+const map = L.map('map').setView([42.3601, -71.0589], 13); // Default center (Boston)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const shopInput = document.getElementById("shop");
+const suggestionsBox = document.getElementById("suggestions");
+
+shopInput.addEventListener("input", async function() {
+    const query = shopInput.value.trim();
+    if (!query) {
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.classList.remove("active");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/search_shops?query=${encodeURIComponent(query)}`);
+        const shops = await response.json();
+
+        if (!shops.length) {
+            suggestionsBox.innerHTML = '<div class="suggestion-item">No results found</div>';
+        } else {
+            suggestionsBox.innerHTML = shops.map(shop => {
+                const encodedName = shop.name.replace(/'/g, "\\'");
+                return `<div class="suggestion-item" onclick="selectShop('${encodedName}', '${shop.location}')">
+                    ${shop.name}
+                </div>`;
+            }).join('');
+        }
+        suggestionsBox.classList.add("active");
+    } catch (error) {
+        console.error("Search error:", error);
+        suggestionsBox.innerHTML = '<div class="suggestion-item">Error searching shops</div>';
+        suggestionsBox.classList.add("active");
+    }
+});
+
+function selectShop(name, location) {
+    shopInput.value = name;
+    suggestionsBox.innerHTML = "";
+    suggestionsBox.classList.remove("active");
+
+    if (!location || !location.includes(",")) {
+        console.error("Invalid location:", location);
+        return;
+    }
+
+    const [lat, lon] = location.split(",").map(Number);
+
+    if (isNaN(lat) || isNaN(lon)) {
+        console.error("Invalid coordinates:", lat, lon);
+        return;
+    }
+
+    if (window.currentMarker) {
+        map.removeLayer(window.currentMarker);
+    }
+
+    window.currentMarker = L.marker([lat, lon]).addTo(map)
+        .bindPopup(name)
+        .openPopup();
+
+    map.setView([lat, lon], 15);
+}
+</script>
+
+{% endblock %}

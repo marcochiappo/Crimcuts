@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<h1>Register for Crimcutz</h1>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="{{ url_for('register') }}" method="post">
+    <div>
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" autocomplete="off" required>
+    </div>
+
+    <div>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required>
+    </div>
+
+    <div>
+        <label for="confirm_password">Confirm Password:</label><br>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+    </div>
+
+    <br>
+
+    <label>
+        <input type="checkbox" id="togglePassword"> Show Password
+    </label>
+
+    <p id="pwMessage" style="color:#ff4c4c; display:none; margin-top: 5px;">
+        Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit.
+    </p>
+
+    <br><br>
+
+    <button type="submit">Register</button>
+</form>
+
+<p><a href="/login">Already have an account? Log in here.</a></p>
+<p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+<script>
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordField = document.getElementById('password');
+    const cpwField = document.getElementById('confirm_password');
+
+    passwordField.type = passwordField.type === 'password' ? 'text' : 'password';
+    cpwField.type = cpwField.type === 'password' ? 'text': 'password';
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    const pw = this.value;
+    const pwMessage = document.getElementById('pwMessage');
+
+    const longEnough = pw.length >= 8;
+    const hasUppercase = /[A-Z]/.test(pw);
+    const hasLowercase = /[a-z]/.test(pw);
+    const hasDigit = /[0-9]/.test(pw);
+    
+    if (longEnough && hasUppercase && hasLowercase && hasDigit) {
+        pwMessage.style.display = 'none';
+    } else {
+        pwMessage.style.display = 'block';
+    }
+});
+</script>
+
+{% endblock %}

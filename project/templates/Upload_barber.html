@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<h1>Upload Your Shop</h1>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action="{{ url_for('upload_barber') }}" method="post">
+    <div>
+        <label for="barber">Barber Name:</label><br>
+        <input type="text" id="barber" name="barber" autocomplete="off" required>
+    </div>
+
+    <div>
+        <label for="shop_id">Shop:</label><br>
+        <select id="shop_id" name="shop_id" required>
+            <option value="" disabled selected>Select a shop</option>
+            {% for shop in shops %}
+                <option value="{{ shop['id'] }}">{{ shop['name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">Confirm</button>
+</form>
+
+<p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+{% endblock %}

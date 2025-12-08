@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<h1>Crimcuts</h1>
+
+{% if user %}
+    <p>Welcome, {{ user }}!</p>
+    <p>Head over to the barbers page to read and leave reviews.</p>
+    <p><a href="{{ url_for('barbers') }}"><button>Browse Barbers</button></a></p>
+{% else %}
+    <p>Welcome to the barber rating app.</p>
+    <p><a href="{{ url_for('register') }}"><button>Register</button></a></p>
+    <p><a href="{{ url_for('login') }}"><button>Login</button></a></p>
+{% endif %}
+
+{% endblock %}

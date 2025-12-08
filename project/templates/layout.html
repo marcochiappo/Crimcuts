@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--Aaryan's do not touch g-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrimCutz</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&family=Anton&display=swap" rel="stylesheet">
+
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    {% block head %}{% endblock %}
+
+</head>
+
+
+<body>
+
+<header class="site-header">
+
+    <img src="{{ url_for('static', filename='images/haircut1.jpg') }}"
+         class="corner-photo left-corner">
+
+    <div class="title-wrapper">
+        <img src="{{ url_for('static', filename='images/scissors.png') }}"
+             class="scissors-icon">
+        <h1 class="site-title">CrimCutz</h1>
+    </div>
+
+    <img src="{{ url_for('static', filename='images/haircut3.png') }}"
+         class="corner-photo right-corner">
+
+    <p class="tagline">"Doing Harvard boys right — helping your bros get a decent trim."</p>
+
+</header>
+
+
+
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('barbers') }}">Barbers</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('map_page') }}">Map</a>
+        {% if session.get("username") %}
+            <a href="{{ url_for('upload_shop') }}">Upload Shop</a>
+            <a href="{{ url_for('upload_barber') }}">Upload Barber</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </nav>
+
+    <!-- Page content here -->
+    <main>
+        {% block main %}{% endblock %}
+    </main>
+
+    <footer>
+        © CrimCutz — Read and leave reviews for barbers in the Cambridge/Boston area
+    </footer>
+
+</body>
+</html>
+
