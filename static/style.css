@@ -367,41 +367,48 @@ footer {
     color: #ffffff;
 }
 
-/* ===== MOBILE RESPONSIVE FIXES ===== */
+/* ===== MOBILE RESPONSIVE FIXES (FINAL) ===== */
 @media (max-width: 768px) {
 
-   /* Remove absolute positioning so they don’t overlap title */
-   .corner-photo {
-      position: static;
-      width: 45vw;      /* Much more flexible */
-      height: auto;     /* Prevent stretching */
-      margin: 10px auto;
-      display: block;
-   }
+    /* Override absolute layout */
+    .corner-photo {
+        position: relative !important;  /* force override */
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
 
-   /* Stack header visually */
-   .site-header {
-      padding-top: 10px;
-   }
+        width: 40vw !important;
+        max-width: 160px;
+        height: auto !important;
 
-   /* Title becomes centered and not blocked */
-   .title-wrapper {
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-   }
+        margin: 10px auto;
+        display: block;
+    }
 
-   /* Resize scissors */
-   .scissors-icon {
-      width: 50px;
-      height: 50px;
-   }
+    .site-header {
+        padding-top: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .title-wrapper {
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .scissors-icon {
+        width: 45px;
+        height: auto;
+    }
 }
 
-/* OPTIONAL: On very small phones, hide corner photos */
+/* Optional: hide images on very small phones */
 @media (max-width: 480px) {
-   .corner-photo {
-      display: none;
-   }
+    .corner-photo {
+        display: none !important;
+    }
 }
+
 
