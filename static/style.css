@@ -367,17 +367,16 @@ footer {
     color: #ffffff;
 }
 
-/* ===== MOBILE RESPONSIVE FIXES (FINAL) ===== */
-@media (max-width: 768px) {
+/* ===== MOBILE PORTRAIT ONLY (Use stacked layout) ===== */
+@media (max-width: 600px) and (orientation: portrait) {
 
-    /* Override absolute layout */
     .corner-photo {
-        position: relative !important;  /* force override */
+        position: relative !important;
+        top: auto !important;
         left: auto !important;
         right: auto !important;
-        top: auto !important;
 
-        width: 40vw !important;
+        width: 45vw !important;
         max-width: 160px;
         height: auto !important;
 
@@ -404,11 +403,12 @@ footer {
     }
 }
 
-/* Optional: hide images on very small phones */
-@media (max-width: 480px) {
+/* ===== SMALL PHONES ONLY (optional: hide corner photos completely) ===== */
+@media (max-width: 480px) and (orientation: portrait) {
     .corner-photo {
         display: none !important;
     }
 }
+
 
 
